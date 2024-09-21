@@ -50,6 +50,7 @@ if __name__ == "__main__":
             response = requests.get(url, headers=headers)
         except:
             break
+        print(f"Adding ID: {imdb_id}")
         json_data_list.append(response.text)
 
     output_file = "movie_data.json"
