@@ -11,8 +11,11 @@ def merge_json_files(json_data_list, output_file):
     merged_data = []
 
     for json_data in json_data_list:
-        data = json.loads(json_data)
-        merged_data.append(data)
+        try:
+            data = json.loads(json_data)
+            merged_data.append(data)
+        except:
+            continue
 
     # Check if the file exists already to choose whether to overwrite or to append
     if not os.path.isfile(output_file):
@@ -31,14 +34,18 @@ if __name__ == "__main__":
 
     imdb_df = pd.read_csv("imdb_codes.csv", header=0)
 
-    start_index = 10
-    end_index = 990
+    start_index = 300
+    end_index = len(imdb_df)
 
     for i in range(start_index, end_index):
         try:
             imdb_id = imdb_df["tconst"][i]
         except:
             break
+
+        if pd.isnull(imdb_id):
+            print(f"--skipping empty row {i}--")
+            continue
 
         url = f"http://www.omdbapi.com/?i={imdb_id}&plot=full&apikey={API_KEY}"
 
@@ -50,7 +57,7 @@ if __name__ == "__main__":
             response = requests.get(url, headers=headers)
         except:
             break
-        print(f"Adding ID: {imdb_id}")
+        print(f"Adding Row: {i}, ID: {imdb_id}")
         json_data_list.append(response.text)
 
     output_file = "movie_data.json"
