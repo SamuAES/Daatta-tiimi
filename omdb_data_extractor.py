@@ -60,5 +60,5 @@ if __name__ == "__main__":
         print(f"Adding Row: {i}, ID: {imdb_id}")
         json_data_list.append(response.text)
 
-    output_file = "movie_data.json"
+    output_file = "raw_movie_data.json"
     merge_json_files(json_data_list, output_file)
