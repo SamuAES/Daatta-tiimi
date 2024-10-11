@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html> 
+    <head> 
+        <title>Movie Data Miniproject Demo</title> 
+    </head> 
+    <body>
+        <div id="axis-select-wrapper">
+            <label for="x-axis">X axis</label>
+            <select id="x-axis-select" name="x-axis" form="data-form">
+                {% for column in columns%} 
+                    <option value="{{column}}" {% if(column == x_axis) %}selected{% endif %}>{{column}}</option>
+                {% endfor %} 
+            </select>
+            <label for="y-axis">Y axis</label>
+            <select id="y-axis-select" name="y-axis" form="data-form">
+                {% for column in columns%} 
+                    <option value="{{column}}" {% if(column == y_axis) %}selected{% endif %}>{{column}}</option>
+                {% endfor %} 
+            </select>
+            <form id="data-form">
+                <input type="submit" value="Plot">
+            </form>
+        </div>
+        <div id="plot-wrapper">
+            <img src='data:image/png;base64,{{data}}'/>
+        </div>
+    </body> 
+</html>
