@@ -3,7 +3,7 @@
     <head> 
         <title>Movie Data Miniproject Demo</title> 
     </head> 
-    <body>
+    <body onload="checkValues()">
         <div id="axis-select-wrapper">
             <label for="x-axis">X axis</label>
             <select id="x-axis-select" name="x-axis" form="data-form">
@@ -24,5 +24,68 @@
         <div id="plot-wrapper">
             <img src='data:image/png;base64,{{data}}'/>
         </div>
+        <div id="model-wrapper">
+            <form id="model-form" oninput="checkValues()">
+                <label for="budget">Budget</label>
+                <input id="budget" name="budget" type="number" min="1100" max="533200000" value="{{saved_budget}}">
+                <label for="genre">Genres</label>
+                <select id="genre" name="genre" form="model-form" multiple>
+                    {% for genre in genres%}
+                        <option value="{{genre}}" {% if genre in saved_genres %}selected{% endif %}>{{genre}}</option>
+                    {% endfor %}
+                </select>
+                <label for="director">Directors</label>
+                <select id="director" name="director" form="model-form" multiple>
+                    {% for director in directors%}
+                        <option value="{{director}}" {% if director in saved_directors %}selected{% endif %}>{{director}}</option>
+                    {% endfor %}
+                </select>
+                <label for="writer">Writers</label>
+                <select id="writer" name="writer" form="model-form" multiple>
+                    {% for writer in writers%}
+                        <option value="{{writer}}" {% if writer in saved_writers %}selected{% endif %}>{{writer}}</option>
+                    {% endfor %}
+                </select>
+                <label for="actor">Actors</label>
+                <select id="actor" name="actor" form="model-form" multiple>
+                    {% for actor in actors%}
+                        <option value="{{actor}}" {% if actor in saved_actors %}selected{% endif %}>{{actor}}</option>
+                    {% endfor %}
+                </select>
+                <label for="release-date">Release date</label>
+                <input id="releaseDate" name="release-date" id="releaseDate" type="date" value="{{saved_release}}">
+                <input id="submitButton" type="submit" value="Predict">
+            </form>
+        </div>
+        <div id="model-prediction-wrapper">
+            <p>
+                Predicted profit: {% if (predicted_profit != None) %}{{predicted_profit}}{% else %}N/A{% endif %}<br>
+                Predicted IMDB rating: {% if (predicted_imdb != None) %}{{predicted_imdb}}{% else %}N/A{% endif %}<br>
+                Predicted Metascore rating: {% if (predicted_metascore != None) %}{{predicted_metascore}}{% else %}N/A{% endif %}<br>
+                Precited RottenTomatoes rating: {% if (predicted_rottentomatoes != None) %}{{predicted_rottentomatoes}}{% else %}N/A{% endif %} 
+            </p>
+        </div>
+        <script>
+            /*
+             * Set the min and max dates for the release date. Max arbitrarily 50 years in the future.
+             * However, year is not relevant for our predictions.
+             */
+            releaseDate.min = new Date().toLocaleDateString('fr-ca');
+            var maxDate = new Date();
+            maxDate.setFullYear(maxDate.getFullYear() + 50);
+            releaseDate.max = maxDate.toLocaleDateString('fr-ca');
+
+            /*
+             * Check that something has been entered to each field before enabling the button
+             */
+            function checkValues() {
+                console.log("Checking input")
+                if (!budget.value | !genre.value | !director.value | !writer.value | !actor.value | !releaseDate.value) {
+                    submitButton.disabled = true;
+                } else {
+                    submitButton.disabled = false;
+                }
+            }
+        </script>
     </body> 
 </html>
