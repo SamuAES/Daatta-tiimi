@@ -4,11 +4,13 @@
         <title>Movie Data Miniproject Demo</title> 
     </head> 
     <body onload="checkValues()">
+        <h1>Plots from movie data</h1>
         <div id="plot-wrapper">
             {% for plot in plots %}
                 <img src="{{url_for('static', filename=plot)}}" width="350px">
             {% endfor %}
         </div>
+        <h1>Custom plots</h1>
         <div id="axis-select-wrapper">
             <label for="x-axis">X axis</label>
             <select id="x-axis-select" name="x-axis" form="data-form">
@@ -29,6 +31,7 @@
         <div id="plot-wrapper">
             <img src='data:image/png;base64,{{data}}'/>
         </div>
+        <h1>Profit and rating predictor</h1>
         <div id="model-wrapper">
             <form id="model-form" oninput="checkValues()">
                 <label for="budget">Budget</label>
