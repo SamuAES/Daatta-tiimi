@@ -1,3 +1,4 @@
+import os
 import base64
 import pandas as pd
 from datetime import datetime
@@ -45,6 +46,9 @@ def predict(budget: int, genres: list, directors: list, writers: list, actors: l
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    # Get ready-made plots
+    plots = os.listdir("static/plots")
+    plots = ["plots/" + file for file in plots]
     # Get column params
     x_axis = request.args.get("x-axis")
     y_axis = request.args.get("y-axis")
@@ -104,7 +108,7 @@ def home():
         saved_writers=writer_predict, saved_actors=actor_predict, saved_release=release_date_str,
         predicted_profit=predictions["profit"], predicted_imdb=predictions["imdb"],
         predicted_metascore=predictions["metascore"],
-        predicted_rottentomatoes=predictions["rottentomatoes"])
+        predicted_rottentomatoes=predictions["rottentomatoes"], plots=plots)
 
 if __name__ == "__main__": 
     app.run(debug=False) 
