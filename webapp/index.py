@@ -9,10 +9,10 @@ from matplotlib.figure import Figure
 app = Flask(__name__)
 
 # Change this to point to the data to be used for the web app
-DATAFRAME = pd.read_pickle('../log_profit_X.pkl')
+DATAFRAME = pd.read_pickle('../movie_data_with_budgets.pkl')
 # Set the default axes
 DEFAULT_X = "log_profit"
-DEFAULT_Y = "Runtime"
+DEFAULT_Y = "adjusted_prod_budget"
 
 def predict(budget: int, genres: list, directors: list, writers: list, actors: list,
     release_date: datetime):
