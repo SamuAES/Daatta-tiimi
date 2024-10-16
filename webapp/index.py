@@ -1,12 +1,18 @@
 import os
 import base64
 import pandas as pd
+import numpy as np
+from tpot_profit_classifier import predict_profit
+from movieapp import construct_x, valid_inputs
 from datetime import datetime
 from io import BytesIO
 from flask import Flask, render_template, request
 from matplotlib.figure import Figure
+from sklearn.ensemble import RandomForestClassifier
+import pickle
 
 app = Flask(__name__)
+
 
 # Change this to point to the data to be used for the web app
 DATAFRAME = pd.read_pickle('../movie_data_with_budgets.pkl')
@@ -14,35 +20,20 @@ DATAFRAME = pd.read_pickle('../movie_data_with_budgets.pkl')
 DEFAULT_X = "log_profit"
 DEFAULT_Y = "adjusted_prod_budget"
 
-def predict(budget: int, genres: list, directors: list, writers: list, actors: list,
-    release_date: datetime):
-    """Predict the profit and ratings based on the given data
-    Args:
-        budget: The budget of the film in USD
-        genres: A list of genres for the film
-        directors: A list of directors for the film
-        writers: A list of writers for the film
-        actors: A list of actors for the film
-        release_date: A datetime object denoting the release date of the film
-    Returns:
-        A prediction dict of the following keys:
-            profit (the predicted profit)
-            imdb (the predicted IMDB rating)
-            metascore (the predicted Metascore rating)
-            rottentomatoes (the predicted RottenTomatoes rating)"""
+# Load data on actors, directors and writers
+actors_df = pd.read_csv("actors.csv")
+directors_df = pd.read_csv("directors.csv")
+writers_df = pd.read_csv("writers.csv")
 
-    # Initialize the dict for the prediction results
-    predictions = {
-        "profit": 0.0,
-        "imdb": 0.0,
-        "metascore": 0,
-        "rottentomatoes": 0
-    }
+# Genres, actors, directors, writers months.
+genres = np.unique(np.hstack(DATAFRAME["Genre"]))
+genres = genres[genres != None]
+actors = actors_df["primaryName"].sort_values().values
+directors = directors_df["primaryName"].sort_values().values
+writers = writers_df["primaryName"].sort_values().values
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-    # Predict the values
-    # TODO: Add the prediction model methods here and add the results to predictions
 
-    return predictions
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -72,43 +63,75 @@ def home():
     # Encode the data into a format that can be rendered on the page
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
 
-    # Get the genres, directors, writers and actors
-    # TODO: Get the actual values for the dataset
-    genres = ["Genre 1", "Genre 2", "Genre 3", "Genre 4", "Genre 5"]
-    directors = ["Alfa", "Bravo", "Charlie"]
-    writers = ["Delta", "Echo", "Foxtrot"]
-    actors = ["Golf", "Hotel", "India", "Juliett", "Kilo", "Lima"]
-    # Get the data for the prediction model
+    # Get the user inputs for prediction
     budget_predict = request.args.get("budget")
-    genre_predict = request.args.getlist("genre")
-    director_predict = request.args.getlist("director")
-    writer_predict = request.args.getlist("writer")
-    actor_predict = request.args.getlist("actor")
-    release_date_str = request.args.get("release-date")
-    try:
-        release_predict = datetime.strptime(release_date_str, "%Y-%m-%d")
-    except:
-        release_predict = None
-    # Check that all values are present before making a prediction, otherwise set everything to None
-    if budget_predict and genre_predict and director_predict and writer_predict and actor_predict and release_predict: 
-        predictions = predict(budget_predict, genre_predict, director_predict, writer_predict,
-            actor_predict, release_predict)
+    runtime_predict = request.args.get("runtime")
+    genre_predict = []
+    for genre in genres:
+        genre_predict.append(request.args.get(genre))
+    actors_predict = request.args.get("actors")
+    director_predict = request.args.get("director")
+    writers_predict = request.args.get("writers")
+    month_predict = request.args.get("month")
+
+    # Check that all values are present before making a prediction
+    prediction = ""
+    if valid_inputs(runtime_predict,
+                    budget_predict,
+                    actors_predict,
+                    director_predict,
+                    writers_predict,
+                    genre_predict,
+                    month_predict,
+                    actors_df,
+                    directors_df,
+                    writers_df
+                    ):
+
+        try:
+            # Construct X from user inputs
+            features = construct_x(
+                                    runtime=runtime_predict,
+                                    budget=budget_predict,
+                                    actors=actors_predict,
+                                    director=director_predict,
+                                    writers=writers_predict,
+                                    selected_genres=genre_predict,
+                                    month=month_predict,
+                                    actors_df=actors_df,
+                                    directors_df=directors_df,
+                                    writers_df=writers_df,
+                                    genres=genres,
+                                    months=months
+                                    )
+            
+            prediction = predict_profit(features)
+
+            if prediction == 1:
+                prediction = "This movie should make you some profit!"
+            else:
+                prediction = "You'll likely lose your money with this movie."
+
+        except:
+            prediction = "Something went wrong with pipeline."
+
     else:
-        predictions = {
-            "profit": None,
-            "imdb": None,
-            "metascore": None,
-            "rottentomatoes": None
-        }
+        prediction = """Check names and make sure they are exact matches from the list of actors, directors and writers.
+                        Separate names with comma.
+                        Rember to select release month and genres."""
+
 
     # Render the page
-    return render_template("index.html", data=data, columns=columns, x_axis=x_axis, y_axis=y_axis,
-        genres=genres, directors=directors, writers=writers, actors=actors,
-        saved_budget=budget_predict, saved_genres=genre_predict, saved_directors=director_predict,
-        saved_writers=writer_predict, saved_actors=actor_predict, saved_release=release_date_str,
-        predicted_profit=predictions["profit"], predicted_imdb=predictions["imdb"],
-        predicted_metascore=predictions["metascore"],
-        predicted_rottentomatoes=predictions["rottentomatoes"], plots=plots)
+    return render_template("index.html", plots=plots, data=data, columns=columns, x_axis=x_axis, y_axis=y_axis,
+        genres=genres, directors=directors, writers=writers, actors=actors, months = months,
+        saved_budget=budget_predict,
+        saved_runtime = runtime_predict,
+        saved_genres=genre_predict,
+        saved_actors=actors_predict,
+        saved_directors=director_predict,
+        saved_writers=writers_predict,
+        prediction=prediction
+        )
 
 if __name__ == "__main__": 
     app.run(debug=False) 
