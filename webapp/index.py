@@ -37,7 +37,9 @@ directors = directors_df["primaryName"].sort_values().values
 writers = writers_df["primaryName"].sort_values().values
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-
+words_df = pd.read_csv("profitable_vs_not_words.csv")
+good_words = list(words_df["Profitable words"].values)
+bad_words = list(words_df["Non-profitable words"].values)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -130,6 +132,8 @@ def home():
 
     # Render the page
     return render_template("index.html",
+                            good_words=good_words,
+                            bad_words=bad_words,
                             plots=plots,
                             data=data,
                             columns=columns,
