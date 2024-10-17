@@ -3,3 +3,5 @@ name.basics.tsv
 title.principals.tsv
 .env
 .ipynb_checkpoints
+__pycache__
+
