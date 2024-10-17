@@ -16,6 +16,10 @@ app = Flask(__name__)
 
 # Change this to point to the data to be used for the web app
 DATAFRAME = pd.read_pickle('../movie_data_with_budgets.pkl')
+DATAFRAME_DYN = DATAFRAME.copy()
+DATAFRAME_DYN = DATAFRAME_DYN.drop(["Title", "Genre", "Director", "Writer", "Actors", "Plot",
+    "Country", "Language", "Awards", "tconst", "nconst"], axis=1)
+DATAFRAME_DYN["Rated"] = DATAFRAME_DYN["Rated"].fillna(value="N/A")
 # Set the default axes
 DEFAULT_X = "log_profit"
 DEFAULT_Y = "adjusted_prod_budget"
@@ -49,11 +53,11 @@ def home():
     if not y_axis:
         y_axis = DEFAULT_Y
     # Get columns
-    columns = list(DATAFRAME)
+    columns = list(DATAFRAME_DYN)
     # Create the figure
     fig = Figure()
     ax = fig.subplots()
-    ax.scatter(DATAFRAME[x_axis], DATAFRAME[y_axis], color="blue", alpha=0.2)
+    ax.scatter(DATAFRAME_DYN[x_axis], DATAFRAME_DYN[y_axis], color="blue", alpha=0.2)
     ax.set_title(f"{x_axis} in relation to {y_axis}")
     ax.set_xlabel(x_axis)
     ax.set_ylabel(y_axis)
