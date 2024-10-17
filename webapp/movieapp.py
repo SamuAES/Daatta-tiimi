@@ -27,6 +27,7 @@ def valid_inputs(runtime, budget, actors, director, writers, selected_genres, mo
         return False
     else:
         return True
+    
 
 def construct_x(runtime, budget, actors, director, writers, selected_genres, month, actors_df, directors_df, writers_df, genres, months):
     """Construct vector of 1x47

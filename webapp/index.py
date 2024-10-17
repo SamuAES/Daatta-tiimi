@@ -8,8 +8,7 @@ from datetime import datetime
 from io import BytesIO
 from flask import Flask, render_template, request
 from matplotlib.figure import Figure
-from sklearn.ensemble import RandomForestClassifier
-import pickle
+
 
 app = Flask(__name__)
 
@@ -19,6 +18,7 @@ DATAFRAME = pd.read_pickle('../movie_data_with_budgets.pkl')
 DATAFRAME_DYN = DATAFRAME.copy()
 DATAFRAME_DYN = DATAFRAME_DYN.drop(["Title", "Genre", "Director", "Writer", "Actors", "Plot",
     "Country", "Language", "Awards", "tconst", "nconst"], axis=1)
+
 DATAFRAME_DYN["Rated"] = DATAFRAME_DYN["Rated"].fillna(value="N/A")
 # Set the default axes
 DEFAULT_X = "log_profit"
@@ -52,8 +52,10 @@ def home():
         x_axis = DEFAULT_X
     if not y_axis:
         y_axis = DEFAULT_Y
+        
     # Get columns
     columns = list(DATAFRAME_DYN)
+
     # Create the figure
     fig = Figure()
     ax = fig.subplots()
@@ -66,6 +68,7 @@ def home():
     fig.savefig(buf, format="png")
     # Encode the data into a format that can be rendered on the page
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
+
 
     # Get the user inputs for prediction
     budget_predict = request.args.get("budget")
@@ -126,16 +129,25 @@ def home():
 
 
     # Render the page
-    return render_template("index.html", plots=plots, data=data, columns=columns, x_axis=x_axis, y_axis=y_axis,
-        genres=genres, directors=directors, writers=writers, actors=actors, months = months,
-        saved_budget=budget_predict,
-        saved_runtime = runtime_predict,
-        saved_genres=genre_predict,
-        saved_actors=actors_predict,
-        saved_directors=director_predict,
-        saved_writers=writers_predict,
-        prediction=prediction
-        )
+    return render_template("index.html",
+                            plots=plots,
+                            data=data,
+                            columns=columns,
+                            x_axis=x_axis,
+                            y_axis=y_axis,
+                            genres=genres,
+                            directors=directors,
+                            writers=writers,
+                            actors=actors,
+                            months = months,
+                            saved_budget=budget_predict,
+                            saved_runtime = runtime_predict,
+                            saved_genres=genre_predict,
+                            saved_actors=actors_predict,
+                            saved_directors=director_predict,
+                            saved_writers=writers_predict,
+                            prediction=prediction
+                            )
 
 if __name__ == "__main__": 
     app.run(debug=False) 
