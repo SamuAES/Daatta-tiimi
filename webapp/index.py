@@ -16,7 +16,7 @@ app = Flask(__name__)
 # Change this to point to the data to be used for the web app
 DATAFRAME = pd.read_pickle('../movie_data_with_budgets.pkl')
 DATAFRAME_DYN = DATAFRAME.copy()
-DATAFRAME_DYN = DATAFRAME_DYN.drop(["Title", "Genre", "Director", "Writer", "Actors", "Plot",
+DATAFRAME_DYN = DATAFRAME_DYN.drop(["Title", "Year", "Genre", "Director", "Writer", "Actors", "Plot",
     "Country", "Language", "Awards", "tconst", "nconst"], axis=1)
 
 DATAFRAME_DYN["Rated"] = DATAFRAME_DYN["Rated"].fillna(value="N/A")
