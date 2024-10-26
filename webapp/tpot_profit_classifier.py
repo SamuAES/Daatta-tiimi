@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import pickle
 
-with open('X_data.pkl', 'rb') as f:
+with open('static/X_data.pkl', 'rb') as f:
     X = pickle.load(f)
 
 X = X.drop(columns=["Title", "Year", "Rated", "Released", "Genre", "Director", "Writer", "Actors",\

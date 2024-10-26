@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 
 # Change this to point to the data to be used for the web app
-DATAFRAME = pd.read_pickle('../movie_data_with_budgets.pkl')
+DATAFRAME = pd.read_pickle('static/movie_data_with_budgets.pkl')
 DATAFRAME_DYN = DATAFRAME.copy()
 DATAFRAME_DYN = DATAFRAME_DYN.drop(["Title", "Year", "Genre", "Director", "Writer", "Actors", "Plot",
     "Country", "Language", "Awards", "tconst", "nconst"], axis=1)
@@ -25,9 +25,9 @@ DEFAULT_X = "log_profit"
 DEFAULT_Y = "adjusted_prod_budget"
 
 # Load data on actors, directors and writers
-actors_df = pd.read_csv("actors.csv")
-directors_df = pd.read_csv("directors.csv")
-writers_df = pd.read_csv("writers.csv")
+actors_df = pd.read_csv("static/actors.csv")
+directors_df = pd.read_csv("static/directors.csv")
+writers_df = pd.read_csv("static/writers.csv")
 
 # Genres, actors, directors, writers months.
 genres = np.unique(np.hstack(DATAFRAME["Genre"]))
@@ -37,7 +37,7 @@ directors = directors_df["primaryName"].sort_values().values
 writers = writers_df["primaryName"].sort_values().values
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-words_df = pd.read_csv("profitable_vs_not_words.csv")
+words_df = pd.read_csv("static/profitable_vs_not_words.csv")
 good_words = list(words_df["Profitable words"].values)
 bad_words = list(words_df["Non-profitable words"].values)
 
