@@ -1,5 +1,5 @@
 # Webapp folder
-This folder contains all required files and codes for the webapp.
+This folder contains all required files, data and codes for the webapp.
 The app can be launched by running the index.py file from within the webapp directory, if all required python dependencies are installed.
 
 # Wrangling folder
@@ -7,4 +7,4 @@ This folder contains python scripts and Jupyter notebooks that were used for the
 
 This folder also contains data from different stages of the project. Starting with the raw data and ending with the data that is used in the webapp.
 
-The IMDB data is not included in this folder, since they had combined size of ~4,5 Gb. The IMDB files can be downloaded from https://datasets.imdbws.com/.
+The original IMDB data is not included in this folder, since they had combined size of ~4,5 Gb. The IMDB files can be downloaded from https://datasets.imdbws.com/.
