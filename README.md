@@ -1,6 +1,6 @@
 # Webapp folder
 This folder contains all required files and codes for the webapp.
-The app can be launched by running the index.py file from within the directory, if all required python dependencies are installed.
+The app can be launched by running the index.py file from within the webapp directory, if all required python dependencies are installed.
 
 # Wrangling folder
 This folder contains python scripts and Jupyter notebooks that were used for the data wrangling.These codes might not be able to reproduce the exact same output used in the webapp, since they have been used sort of a living documents during the project.
